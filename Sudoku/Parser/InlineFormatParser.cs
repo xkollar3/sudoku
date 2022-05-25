@@ -7,7 +7,7 @@ namespace Parser {
         {
             StreamReader reader = new StreamReader(File.OpenRead(input));
             string sudoku = reader.ReadLine();
-
+            System.Console.WriteLine("new commit");
             
         }
     }
