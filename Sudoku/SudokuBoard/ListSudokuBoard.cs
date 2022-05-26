@@ -1,3 +1,5 @@
+using Formatter;
+
 namespace SudokuBoard {
     public class ListSudokuBoard : IESudoku
     {
@@ -91,11 +93,16 @@ namespace SudokuBoard {
                 throw new ArgumentException("invalid put index");
             }
 
+            if (num == 0) {
+                board[x][y] = 0;
+                return true;
+            }
             if (!isCellEmpty(x,y)) {
                 return false;
             }
+            
+            int squareInx = x / 3 * 3 + y / 3;
 
-            int squareInx = y % 3 + x / 3 * 3;
             if (getSquareAsInts(squareInx).Contains(num) || getColAsInts(y).Contains(num) || getRowAsInts(x).Contains(num)) {
                 return false;
             }
@@ -112,24 +119,26 @@ namespace SudokuBoard {
 
         private bool genericSolve(int row, int col)
         {
-            for (int i = 0; i < 9; i++) {
-                ListSudokuBoard newBoard = (ListSudokuBoard) copy(this);
-                if (newBoard.put(row, col, i)) {
-                    if (row + 1 < 8) {
-                        row = row + 1;
+            for (int i = 1; i < 10; i++) {
+                if (put(row, col, i)) {
+                    if (row == 8 && col == 8) {
+                        return true;
                     }
-                    else if (col + 1 < 8) {
-                        col = col + 1;
+                    if (col == 8) {
+                        if (genericSolve(row + 1, 0)) {
+                            return true;
+                        }
                     }
                     else {
-                        return true;
+                        if (genericSolve(row, col + 1)) {
+                            return true;
+                        }
                     }
-                    if (newBoard.genericSolve(row, col)) {
-                        return true;
-                    }
+                    put(row, col,  0);
                 }
             }
-
+            
+            
             return false;
 
         }
